@@ -19,7 +19,7 @@ app.use(morgan("dev"));
 // Test Route
 app.get("/", (req, res) => {
     res.json({
-        message: "Secure API Gateway is running 🚀"
+        message: "Secure API Gateway is running"
     });
 });
 
