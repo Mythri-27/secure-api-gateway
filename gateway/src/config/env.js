@@ -1,0 +1,8 @@
+require("dotenv").config();
+
+module.exports = {
+    PORT: process.env.PORT,
+    NODE_ENV: process.env.NODE_ENV,
+    JWT_SECRET: process.env.JWT_SECRET,
+    REDIS_URL: process.env.REDIS_URL,
+};
