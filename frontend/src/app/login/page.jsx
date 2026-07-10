@@ -28,11 +28,15 @@ export default function LoginPage() {
       await login(email.trim().toLowerCase(), password);
       router.push("/dashboard");
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Login failed. Check your credentials."
-      );
+      if (err.response?.data?.error || err.response?.data?.message) {
+        setError(err.response.data.error || err.response.data.message);
+      } else if (err.request) {
+        setError(
+          "Cannot reach the API gateway. Ensure it is running, then restart the frontend dev server."
+        );
+      } else {
+        setError("Login failed. Check your credentials.");
+      }
     } finally {
       setSubmitting(false);
     }

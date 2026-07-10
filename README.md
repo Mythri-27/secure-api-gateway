@@ -31,7 +31,7 @@ npm run dev               # http://localhost:3000
 ```bash
 cd frontend
 npm install
-npm run dev               # http://localhost:3001
+npm run dev               # http://localhost:3000
 ```
 
 Next.js rewrites `/api/*` to `http://localhost:3000/api/*` automatically in development.
@@ -76,13 +76,13 @@ Next.js rewrites `/api/*` to `http://localhost:3000/api/*` automatically in deve
 
 | Variable          | Default                  | Required |
 |-------------------|--------------------------|----------|
-| PORT              | 3000                     | No       |
+| PORT              | 5000                     | No       |
 | NODE_ENV          | development              | No       |
 | JWT_SECRET        | —                        | YES      |
 | REDIS_URL         | redis://localhost:6379   | No       |
 | RATE_LIMIT_MAX    | 100                      | No       |
 | RATE_LIMIT_WINDOW | 60                       | No       |
-| CORS_ORIGINS      | http://localhost:3001    | No       |
+| CORS_ORIGINS      | http://localhost:3000    | No       |
 
 ### frontend/.env.local
 

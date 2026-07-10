@@ -18,7 +18,7 @@ if (
 }
 
 module.exports = {
-    PORT: parseInt(process.env.PORT) || 8000,
+    PORT: parseInt(process.env.PORT) || 5000,
     NODE_ENV: process.env.NODE_ENV || "development",
     JWT_SECRET: process.env.JWT_SECRET,
     REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
@@ -27,5 +27,5 @@ module.exports = {
     // Comma-separated origins or "*" for dev
     CORS_ORIGINS: process.env.CORS_ORIGINS
         ? process.env.CORS_ORIGINS.split(",").map((s) => s.trim())
-        : ["http://localhost:5173"],
+        : ["http://localhost:3000"],
 };
