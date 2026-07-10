@@ -11,47 +11,60 @@
  * Plain-text password for both seed users: "password123"
  */
 
-const USERS = [
-    {
-        id: "user_001",
-        email: "admin@gateway.dev",
-        passwordHash: "$2a$12$iBaku28u8kEZ6nBaPGyViObQ9q7b9f4Y3cjCJlJ/luh9iW1IZcsMW",
-        role: "admin",
-    },
-    {
-        id: "user_002",
-        email: "user@gateway.dev",
-        passwordHash: "$2a$12$iBaku28u8kEZ6nBaPGyViObQ9q7b9f4Y3cjCJlJ/luh9iW1IZcsMW",
-        role: "user",
-    },
-];
+import { db } from "../db/index.js";
+import { users } from "../db/schema.js";
+import { eq } from "drizzle-orm";
 
-/**
- * Find a user by email address (case-insensitive).
- * @param {string} email
- * @returns {object|undefined}
- */
-function findByEmail(email) {
-    return USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
+export async function createUser({
+    email,
+    passwordHash,
+    role = "user",
+}) {
+    const [user] = await db
+        .insert(users)
+        .values({
+            email,
+            passwordHash,
+            role,
+        })
+        .returning();
+
+    return user;
 }
 
-/**
- * Find a user by their ID.
- * @param {string} id
- * @returns {object|undefined}
- */
-function findById(id) {
-    return USERS.find((u) => u.id === id);
+export async function findUserByEmail(email) {
+    const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email));
+
+    return user;
 }
 
-/**
- * Return a safe public view of the user (no passwordHash).
- * @param {object} user
- * @returns {object}
- */
-function publicProfile(user) {
-    const { passwordHash: _omit, ...profile } = user;
-    return profile;
+export async function findUserById(id) {
+    const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id));
+
+    return user;
 }
 
-module.exports = { findByEmail, findById, publicProfile };
+export async function updatePassword(id, passwordHash) {
+    const [user] = await db
+        .update(users)
+        .set({
+            passwordHash,
+            updatedAt: new Date(),
+        })
+        .where(eq(users.id, id))
+        .returning();
+
+    return user;
+}
+
+export async function deleteUser(id) {
+    await db
+        .delete(users)
+        .where(eq(users.id, id));
+}

@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
+
 const { JWT_SECRET } = require("../config/env");
+const { findUserById } = require("../services/userService");
+
 
 /**
  * Verifies the Bearer JWT in the Authorization header.
  * On success, attaches the decoded payload to req.user.
  * On failure, returns a 401 with a clear message.
  */
-function authenticate(req, res, next) {
+async function authenticate(req, res, next) {
     const authHeader = req.headers["authorization"];
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -20,9 +23,19 @@ function authenticate(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        // Attach decoded payload: { id, email, role, iat, exp }
-        req.user = decoded;
+        // Attach decoded payload: { id, iat, exp }
+        //verify by both token and existence of user
+        const user = await findUserById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({
+                message: "User no longer exists",
+            });
+        }
+
+        req.user = user;
         next();
+
     } catch (err) {
         const message =
             err.name === "TokenExpiredError" ? "Token has expired" : "Invalid token";
@@ -47,3 +60,4 @@ function authorize(...roles) {
 }
 
 module.exports = { authenticate, authorize };
+
