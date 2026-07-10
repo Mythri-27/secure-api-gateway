@@ -23,7 +23,7 @@ Secure-Api-Gateway/
 cd gateway
 cp .env.example .env      # set JWT_SECRET and REDIS_URL
 npm install
-npm run dev               # http://localhost:3000
+npm run dev               # http://localhost:5000
 ```
 
 ### 2. Frontend
@@ -88,7 +88,7 @@ Next.js rewrites `/api/*` to `http://localhost:3000/api/*` automatically in deve
 
 | Variable             | Default                | Description                  |
 |----------------------|------------------------|------------------------------|
-| NEXT_PUBLIC_API_URL  | http://localhost:3000  | Gateway URL for API rewrites |
+| NEXT_PUBLIC_API_URL  | http://localhost:5000  | Gateway URL for API rewrites |
 
 ## Production Deployment
 
