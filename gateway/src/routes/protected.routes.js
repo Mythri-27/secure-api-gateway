@@ -38,7 +38,7 @@ router.get("/rate-status", async (req, res, next) => {
 
 // ── GET /api/protected/admin ─────────────────────────────────────
 // Admin-only endpoint — demonstrates role-based access control.
-router.get("/admin",authenticate, authorize("admin"), (req, res) => {
+router.get("/admin", authorize("admin"), (req, res) => {
     res.json({
         message: "Admin access granted",
         user: req.user,

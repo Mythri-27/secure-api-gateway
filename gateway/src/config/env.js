@@ -2,7 +2,7 @@ require("dotenv").config();
 
 // ── Startup validation ─────────────────────────────────────────────
 // Fail fast rather than silently running with broken config.
-const REQUIRED = ["JWT_SECRET"];
+const REQUIRED = ["JWT_SECRET","DATABASE_URL"];
 const missing = REQUIRED.filter((k) => !process.env[k]);
 if (missing.length) {
     console.error(`❌ Missing required environment variables: ${missing.join(", ")}`);
@@ -28,4 +28,5 @@ module.exports = {
     CORS_ORIGINS: process.env.CORS_ORIGINS
         ? process.env.CORS_ORIGINS.split(",").map((s) => s.trim())
         : ["http://localhost:3000"],
+    DATABASE_URL: process.env.DATABASE_URL,
 };
