@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import api from "../lib/api";
@@ -8,7 +8,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); //we donot know if user is logged in, wait until localstorage is checked
 
   // Restore session from localStorage on mount
   useEffect(() => {

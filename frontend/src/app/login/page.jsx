@@ -19,7 +19,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (!loading && user) router.replace("/dashboard");
   }, [user, loading, router]);
-
+ 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");

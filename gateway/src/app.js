@@ -13,6 +13,7 @@ const errorHandler = require("./middleware/errorHandler");
 const testRoutes = require("./routes/test.routes");
 const authRoutes = require("./routes/auth.routes");
 const protectedRoutes = require("./routes/protected.routes");
+const proxyRouter=require("./proxy/proxyRouter.js");
 
 const app = express();
 
@@ -48,6 +49,11 @@ app.use(rateLimiter);
 app.use("/api/test", testRoutes);                              // Public
 app.use("/api/auth", authRoutes);                             // Public
 app.use("/api/protected", authenticate, protectedRoutes);     // JWT required
+app.use((req, res, next) => {
+    console.log("Gateway received:", req.method, req.originalUrl);
+    next();
+});
+app.use(proxyRouter); // dynamic proxy routing 
 
 // ── Error handling ─────────────────────────────────────────────────
 app.use(notFound);
