@@ -29,4 +29,5 @@ module.exports = {
         ? process.env.CORS_ORIGINS.split(",").map((s) => s.trim())
         : ["http://localhost:3000"],
     DATABASE_URL: process.env.DATABASE_URL,
+    INTERNAL_SERVICE_SECRET: process.env.INTERNAL_SERVICE_SECRET || "dev-only-change-me",
 };

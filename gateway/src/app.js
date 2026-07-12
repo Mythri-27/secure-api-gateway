@@ -5,6 +5,7 @@ const morgan = require("morgan");
 
 const { NODE_ENV, CORS_ORIGINS } = require("./config/env");
 const rateLimiter = require("./middleware/rateLimiter");
+const { userRateLimiter } = require("./middleware/rateLimiter");
 const { authenticate } = require("./middleware/auth");
 const auditLogger = require("./middleware/auditLogger");
 const notFound = require("./middleware/notFound");
@@ -31,8 +32,9 @@ app.use(
 );
 
 // ── Body parsing — limit size to prevent large-payload attacks ─────
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+const jsonParser = express.json({ limit: "10kb" });
+const urlencodedParser = express.urlencoded({ extended: true, limit: "10kb" });
+
 
 // ── HTTP request logging ───────────────────────────────────────────
 // Use "combined" (Apache-style) in production for log aggregators,
@@ -47,13 +49,10 @@ app.use(rateLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────
 app.use("/api/test", testRoutes);                              // Public
-app.use("/api/auth", authRoutes);                             // Public
-app.use("/api/protected", authenticate, protectedRoutes);     // JWT required
-app.use((req, res, next) => {
-    console.log("Gateway received:", req.method, req.originalUrl);
-    next();
-});
-app.use(proxyRouter); // dynamic proxy routing 
+app.use("/api/auth", jsonParser, urlencodedParser, authRoutes);                             // Public
+app.use("/api/protected", authenticate, userRateLimiter, jsonParser, urlencodedParser, protectedRoutes);     // JWT required
+
+app.use("/api",proxyRouter); // dynamic proxy routing 
 
 // ── Error handling ─────────────────────────────────────────────────
 app.use(notFound);

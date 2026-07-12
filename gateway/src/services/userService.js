@@ -56,4 +56,14 @@ async function deleteUser(id) {
         .where(eq(users.id, id));
 }
 
-module.exports = { createUser, findUserByEmail, findUserById, updatePassword, deleteUser };
+async function updateRole(id, role) {
+    const [user] = await db
+        .update(users)
+        .set({ role, updatedAt: new Date() })
+        .where(eq(users.id, id))
+        .returning();
+
+    return user;
+}
+
+module.exports = { createUser, findUserByEmail, findUserById, updatePassword, deleteUser, updateRole };

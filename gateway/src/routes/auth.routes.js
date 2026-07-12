@@ -6,10 +6,7 @@ const router = express.Router();
 
 const { JWT_SECRET } = require("../config/env");
 
-const {
-    createUser,
-    findUserByEmail,
-} = require("../services/userService");
+const { createUser, findUserByEmail, } = require("../services/userService");
 
 // Helper to avoid exposing password hash
 function publicProfile(user) {
@@ -46,7 +43,7 @@ router.post("/register", async (req, res, next) => {
         const user = await createUser({
             email: normalizedEmail,
             passwordHash,
-            role: role || "user",
+            role: "user",
         });
 
         const token = jwt.sign(
@@ -70,6 +67,31 @@ router.post("/register", async (req, res, next) => {
         next(err);
     }
 });
+
+router.patch("/users/:id/role", require("../middleware/auth").authenticate, require("../middleware/auth").authorize("admin"), async (req, res, next) => {
+    try {
+        const { role } = req.body;
+        const ALLOWED_ROLES = ["user", "admin"];
+
+        if (!ALLOWED_ROLES.includes(role)) {
+            return res.status(400).json({
+                error: `role must be one of: ${ALLOWED_ROLES.join(", ")}`,
+            });
+        }
+
+        const { updateRole } = require("../services/userService");
+        const updated = await updateRole(req.params.id, role);
+
+        if (!updated) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({ user: publicProfile(updated) });
+    } catch (err) {
+        next(err);
+    }
+}
+);
 
 // ── POST /api/auth/login ──────────────────────────────────────────
 router.post("/login", async (req, res, next) => {
