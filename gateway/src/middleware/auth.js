@@ -1,45 +1,44 @@
-const jwt = require("jsonwebtoken");
-
-const { JWT_SECRET } = require("../config/env");
+const { verifyAccessToken } = require("../utils/tokens");
 const { findUserById } = require("../services/userService");
 
-
 /**
- * Verifies the Bearer JWT in the Authorization header.
- * On success, attaches the decoded payload to req.user.
- * On failure, returns a 401 with a clear message.
+ * Verifies the access token stored in the httpOnly `access_token` cookie.
+ * On success, attaches the DB user record to req.user.
+ * Expired tokens get code: "TOKEN_EXPIRED" so the frontend knows it's
+ * worth attempting a silent refresh instead of bouncing to /login.
  */
 async function authenticate(req, res, next) {
-    const authHeader = req.headers["authorization"];
+    const token = req.cookies?.access_token;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
         return res.status(401).json({
             error: "Unauthorized",
-            message: "Missing or malformed Authorization header. Use: Bearer <token>",
+            code: "NO_TOKEN",
+            message: "Not authenticated.",
         });
     }
 
-    const token = authHeader.split(" ")[1];
-
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        // Attach decoded payload: { id, iat, exp }
-        //verify by both token and existence of user
+        const decoded = verifyAccessToken(token);
         const user = await findUserById(decoded.id);
 
         if (!user) {
             return res.status(401).json({
+                error: "Unauthorized",
+                code: "USER_NOT_FOUND",
                 message: "User no longer exists",
             });
         }
 
         req.user = user;
         next();
-
     } catch (err) {
-        const message =
-            err.name === "TokenExpiredError" ? "Token has expired" : "Invalid token";
-        return res.status(401).json({ error: "Unauthorized", message });
+        const expired = err.name === "TokenExpiredError";
+        return res.status(401).json({
+            error: "Unauthorized",
+            code: expired ? "TOKEN_EXPIRED" : "INVALID_TOKEN",
+            message: expired ? "Access token has expired" : "Invalid token",
+        });
     }
 }
 
@@ -60,4 +59,3 @@ function authorize(...roles) {
 }
 
 module.exports = { authenticate, authorize };
-

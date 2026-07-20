@@ -1,37 +1,42 @@
-"use client"; 
+"use client";
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import api from "../lib/api";
-import { saveSession, clearSession, getToken, getStoredUser, isTokenValid } from "../lib/auth";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
-  const [loading, setLoading] = useState(true); //we donot know if user is logged in, wait until localstorage is checked
+  const [loading, setLoading] = useState(true);
 
-  // Restore session from localStorage on mount
+  // Session lives in httpOnly cookies — the only way to know if one
+  // exists is to ask the backend.
   useEffect(() => {
-    const token = getToken();
-    const stored = getStoredUser();
-    if (token && isTokenValid(token) && stored) {
-      setUser(stored);
-    } else {
-      clearSession();
-    }
-    setLoading(false);
+    let cancelled = false;
+
+    api
+      .get("/auth/me")
+      .then(({ data }) => { if (!cancelled) setUser(data.user); })
+      .catch(() => { if (!cancelled) setUser(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
   }, []);
 
   const login = useCallback(async (email, password) => {
     const { data } = await api.post("/auth/login", { email, password });
-    saveSession(data.token, data.user);
     setUser(data.user);
     return data.user;
   }, []);
 
-  const logout = useCallback(() => {
-    clearSession();
-    setUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Best-effort — cookies are cleared server-side regardless.
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   return (

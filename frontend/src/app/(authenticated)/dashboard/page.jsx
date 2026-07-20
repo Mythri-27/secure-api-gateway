@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
-import { decodeToken, getToken } from "../../../lib/auth";
 import Card from "../../../components/Card";
 import Badge from "../../../components/Badge";
 import Alert from "../../../components/Alert";
@@ -63,11 +62,6 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const tokenPayload = decodeToken(getToken());
-  const expiresAt    = tokenPayload?.exp
-    ? new Date(tokenPayload.exp * 1000).toLocaleTimeString()
-    : "Unknown";
-
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -78,7 +72,6 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
@@ -99,16 +92,13 @@ export default function DashboardPage() {
       {error && <Alert variant="error">{error}</Alert>}
 
       <div className="grid gap-6 sm:grid-cols-2">
-        {/* Profile */}
         <Card title="Your Profile">
-          <StatRow label="User ID"       value={<span className="font-mono text-xs">{user?.id}</span>} />
-          <StatRow label="Email"         value={user?.email} />
-          <StatRow label="Role"          value={<Badge variant={user?.role === "admin" ? "admin" : "user"}>{user?.role}</Badge>} />
-          <StatRow label="Token expires" value={expiresAt} />
-          <StatRow label="Request ID"    value={<span className="max-w-[180px] truncate font-mono text-xs">{profile?.requestId}</span>} />
+          <StatRow label="User ID"    value={<span className="font-mono text-xs">{user?.id}</span>} />
+          <StatRow label="Email"      value={user?.email} />
+          <StatRow label="Role"       value={<Badge variant={user?.role === "admin" ? "admin" : "user"}>{user?.role}</Badge>} />
+          <StatRow label="Request ID" value={<span className="max-w-[180px] truncate font-mono text-xs">{profile?.requestId}</span>} />
         </Card>
 
-        {/* Rate limit */}
         <Card title="Rate Limit">
           {rateStatus ? (
             <div className="space-y-4">
@@ -127,7 +117,6 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Raw response */}
       <Card title="Raw API Response — /api/protected/profile">
         <pre className="overflow-x-auto rounded-lg bg-slate-50 p-4 text-xs text-slate-700">
           {JSON.stringify(profile, null, 2)}

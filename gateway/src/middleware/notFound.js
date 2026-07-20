@@ -1,7 +1,3 @@
-/**
- * 404 catch-all handler.
- * Must be registered AFTER all routes.
- */
 function notFound(req, res) {
     res.status(404).json({
         error: "Not Found",

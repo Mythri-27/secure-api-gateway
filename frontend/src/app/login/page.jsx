@@ -10,16 +10,16 @@ export default function LoginPage() {
   const { login, user, loading } = useAuth();
   const router = useRouter();
 
-  const [email,    setEmail]    = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error,    setError]    = useState("");
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect already-authenticated users after session is restored
   useEffect(() => {
     if (!loading && user) router.replace("/dashboard");
   }, [user, loading, router]);
- 
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -28,8 +28,11 @@ export default function LoginPage() {
       await login(email.trim().toLowerCase(), password);
       router.push("/dashboard");
     } catch (err) {
-      if (err.response?.data?.error || err.response?.data?.message) {
-        setError(err.response.data.error || err.response.data.message);
+      const data = err.response?.data;
+      if (data?.details?.length) {
+        setError(data.details.map((d) => d.message).join(" "));
+      } else if (data?.error || data?.message) {
+        setError(data.error || data.message);
       } else if (err.request) {
         setError(
           "Cannot reach the API gateway. Ensure it is running, then restart the frontend dev server."

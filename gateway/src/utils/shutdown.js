@@ -23,7 +23,7 @@ function registerShutdownHandlers(server) {
         forceExit.unref();
 
         try {
-            // 1. Stop the HTTP server
+            
             await new Promise((resolve, reject) =>
                 server.close((err) => (err ? reject(err) : resolve()))
             );
