@@ -12,7 +12,7 @@ const baseCookieOptions = {
 function setAuthCookies(res, { accessToken, refreshToken, csrfToken }) {
     res.cookie("access_token", accessToken, {
         ...baseCookieOptions,
-        maxAge: ACCESS_TOKEN_TTL * 1000,
+        maxAge: (ACCESS_TOKEN_TTL+60) * 1000,
     });
 
     res.cookie("refresh_token", refreshToken, {

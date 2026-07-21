@@ -37,12 +37,17 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const { config, response } = err;
+    if (!config || !response) return Promise.reject(err);
     const excluded = isExcludedFromAuthHandling(config?.url);
 
-    if (response?.status === 401 && response?.data?.code === "TOKEN_EXPIRED" && !config._retried && !excluded) {
+    // Attempt a silent refresh on ANY 401 (not just a specific error
+    // code) — the access token cookie being missing, invalid, or
+    // expired should all be treated the same way: try to refresh,
+    // and only bounce to /login if that also fails.
+    if (response.status === 401 && !config._retried && !excluded) {
       config._retried = true;
       try {
-        refreshPromise = refreshPromise || api.post("/auth/refresh");//silent refresh
+        refreshPromise = refreshPromise || api.post("/auth/refresh");
         await refreshPromise;
         refreshPromise = null;
         return api(config);
@@ -53,7 +58,7 @@ api.interceptors.response.use(
       }
     }
 
-    if (response?.status === 401 && !excluded) {
+    if (response.status === 401 && (excluded ? config.url.includes("/auth/refresh") : true)) {
       redirectToLogin();
     }
 
