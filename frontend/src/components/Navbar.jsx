@@ -34,6 +34,7 @@ export default function Navbar() {
         {user && (
           <div className="flex items-center gap-5">
             <Link href="/dashboard" className={linkClass("/dashboard")}>Dashboard</Link>
+            <Link href="/products" className={linkClass("/products")}>Products</Link>
             {isAdmin && <Link href="/admin" className={linkClass("/admin")}>Admin</Link>}
           </div>
         )}
