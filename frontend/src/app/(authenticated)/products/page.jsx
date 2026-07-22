@@ -34,8 +34,8 @@ function ProductCard({ product }) {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
-  const [error,    setError]    = useState("");
-  const [loading,  setLoading]  = useState(true);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
     setError("");
@@ -50,10 +50,10 @@ export default function ProductsPage() {
         err.response?.status === 403
           ? "Access denied. Your role isn't permitted to view products."
           : err.response?.status === 502
-          ? "The product service is currently unavailable. Try again shortly."
-          : err.response?.data?.error || "Failed to load products."
+            ? "The product service is currently unavailable. Try again shortly."
+            : err.response?.data?.error || "Failed to load products."
       );
-      
+
     } finally {
       setLoading(false);
     }
