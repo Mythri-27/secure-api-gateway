@@ -1,10 +1,7 @@
 const redisClient = require("../config/redis");
 const { REFRESH_TOKEN_TTL } = require("../config/env");
 
-// Window during which a just-rotated (previous) refresh token is still
-// accepted. Covers legitimate concurrent requests (e.g. a page firing
-// several protected API calls at once, all expiring together) without
-// weakening protection against real token replay/theft.
+// Window during which a just-rotated (previous) refresh token is still accepted. Covers legitimate concurrent requests (e.g. a page firing several protected API calls at once, all expiring together) without weakening protection against real token replay/theft.
 const GRACE_PERIOD_SECONDS = 10;
 
 const currentKey = (userId) => `refresh:current:${userId}`;
@@ -33,7 +30,7 @@ async function checkJti(userId, jti) {
     if (current === jti) return "current";
 
     const previous = await redisClient.get(previousKey(userId));
-    if (previous === jti) return "previous";
+    if (previous === jti) return "previous";//within grace period
 
     return "invalid";
 }

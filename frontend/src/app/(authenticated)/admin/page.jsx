@@ -52,8 +52,15 @@ export default function AdminPage() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
-
+  useEffect(() => {
+    if (!user) return;       // session still loading — wait
+    if (!isAdmin) {
+      setLoading(false);     // nothing to fetch; redirect effect handles navigation away
+      return;
+    }
+    fetchData();
+  }, [user, isAdmin, fetchData]);
+  
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">

@@ -1,0 +1,12 @@
+process.env.NODE_ENV = "test";
+process.env.JWT_SECRET = "test-jwt-secret-not-for-real-use-32chars";
+process.env.JWT_REFRESH_SECRET = "test-jwt-refresh-secret-not-for-real-use-32c";
+process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/testdb";
+process.env.REDIS_URL = "redis://localhost:6379";
+process.env.INTERNAL_SERVICE_SECRET = "test-internal-secret";
+process.env.ACCESS_TOKEN_TTL = "900";
+process.env.REFRESH_TOKEN_TTL = "604800";
+process.env.RATE_LIMIT_MAX = "5";
+process.env.RATE_LIMIT_WINDOW = "60";
+process.env.CORS_ORIGINS = "http://localhost:3000";
+process.env.PORT = "5000";

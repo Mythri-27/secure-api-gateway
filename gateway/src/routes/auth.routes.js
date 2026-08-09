@@ -161,7 +161,7 @@ router.post("/logout", async (req, res) => {
         const token = req.cookies?.refresh_token;
         if (token) {
             const decoded = verifyRefreshToken(token);
-            await refreshTokenStore.revoke(decoded.id);
+            await refreshTokenStore.revokeAll(decoded.id);
         }
     } catch {
         // Invalid/expired — nothing to revoke server-side.

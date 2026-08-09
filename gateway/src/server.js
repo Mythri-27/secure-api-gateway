@@ -22,7 +22,6 @@ async function startServer() {
         console.log(`     GET  /api/test/counter`);
         console.log(`     POST /api/auth/login`);
         console.log(`     GET  /api/auth/verify`);
-        console.log(`\n   Protected routes (Bearer token required):`);
         console.log(`     GET  /api/protected/profile`);
         console.log(`     GET  /api/protected/rate-status`);
         console.log(`     GET  /api/protected/admin  (admin role only)\n`);
