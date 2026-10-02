@@ -8,13 +8,13 @@ async function startServer() {
     try {
         await redisClient.connect();
     } catch (err) {
-        console.error("❌ Failed to connect to Redis:", err.message);
+        console.error(" Failed to connect to Redis:", err.message);
         console.error("   Ensure Redis is running at the configured REDIS_URL.");
         process.exit(1);
     }
 
     const server = app.listen(PORT, () => {
-        console.log(`\n🚀 Gateway running on http://localhost:${PORT}  [${NODE_ENV}]`);
+        console.log(`\n Gateway running on http://localhost:${PORT}  [${NODE_ENV}]`);
         console.log(`\n   Public routes:`);
         console.log(`     GET  /api/test/health`);
         console.log(`     GET  /api/test/health/ready`);
@@ -33,6 +33,6 @@ async function startServer() {
 
 // Catch any unhandled startup errors
 startServer().catch((err) => {
-    console.error("❌ Unhandled startup error:", err);
+    console.error("Unhandled startup error:", err);
     process.exit(1);
 });

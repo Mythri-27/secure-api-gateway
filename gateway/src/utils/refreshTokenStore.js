@@ -17,7 +17,7 @@ async function setCurrent(userId, jti) {
 }
 
 async function getCurrentJti(userId) {
-    return redisClient.get(currentKey(userId));
+    return redisClient.get(currentKey(userId)); //returns jti
 }
 
 /**

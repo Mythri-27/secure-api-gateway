@@ -13,11 +13,11 @@ const redisClient = require("../config/redis");
 
 function registerShutdownHandlers(server) {
     const shutdown = async (signal) => {
-        console.log(`\n🛑 ${signal} received — shutting down gracefully...`);
+        console.log(`\n ${signal} received — shutting down gracefully...`);
 
         // Force-kill if cleanup takes longer than 10 s
         const forceExit = setTimeout(() => {
-            console.error("❌ Graceful shutdown timed out, forcing exit.");
+            console.error("Graceful shutdown timed out, forcing exit.");
             process.exit(1);
         }, 10_000);
         forceExit.unref();
@@ -27,16 +27,16 @@ function registerShutdownHandlers(server) {
             await new Promise((resolve, reject) =>
                 server.close((err) => (err ? reject(err) : resolve()))
             );
-            console.log("✅ HTTP server closed");
+            console.log("HTTP server closed");
 
             // 2. Disconnect Redis
             await redisClient.quit();
-            console.log("✅ Redis disconnected");
+            console.log("Redis disconnected");
 
             clearTimeout(forceExit);
             process.exit(0);
         } catch (err) {
-            console.error("❌ Error during shutdown:", err.message);
+            console.error("Error during shutdown:", err.message);
             process.exit(1);
         }
     };

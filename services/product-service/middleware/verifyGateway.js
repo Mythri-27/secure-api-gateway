@@ -1,7 +1,7 @@
 const INTERNAL_SERVICE_SECRET = process.env.INTERNAL_SERVICE_SECRET;
 
 if (!INTERNAL_SERVICE_SECRET) {
-    console.error("❌ INTERNAL_SERVICE_SECRET is not set. Refusing to start.");
+    console.error("INTERNAL_SERVICE_SECRET is not set. Refusing to start.");
     process.exit(1);
 }
 
