@@ -4,6 +4,7 @@ const { SERVICES } = require("../config/services");
 const { authenticate, authorize } = require("../middleware/auth");
 const { INTERNAL_SERVICE_SECRET } = require("../config/env");
 const http = require("http");
+const csrfProtection = require("../middleware/csrf");
 
 // Shared pool of reusable connections to downstream services (internal hop only).
 const upstreamAgent = new http.Agent({
@@ -20,7 +21,7 @@ Object.entries(SERVICES).forEach(([route, config]) => {
     const guards = [];
     if (config.authRequired) guards.push(authenticate);
     if (config.roles?.length) guards.push(authorize(...config.roles));
-
+    guards.push(csrfProtection);
     router.use(`/${route}`, ...guards, createProxyMiddleware({
         target: config.target,
         changeOrigin: true,

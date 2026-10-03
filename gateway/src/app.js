@@ -22,6 +22,12 @@ const app = express();
 
 // ── Security headers ───────────────────────────────────────────────
 app.use(helmet());
+// API responses must never be cached; lock down browser features.
+app.use("/api", (req, res, next) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    next();
+});
 
 // ── CORS ───────────────────────────────────────────────────────────
 app.use(
