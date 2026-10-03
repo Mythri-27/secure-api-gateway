@@ -3,6 +3,16 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { SERVICES } = require("../config/services");
 const { authenticate, authorize } = require("../middleware/auth");
 const { INTERNAL_SERVICE_SECRET } = require("../config/env");
+const http = require("http");
+
+// Shared pool of reusable connections to downstream services (internal hop only).
+const upstreamAgent = new http.Agent({
+    keepAlive: true,
+    maxSockets: 100,
+    maxFreeSockets: 10,
+    keepAliveMsecs: 1000,
+    timeout: 5000,
+});
 
 const router = express.Router();
 
@@ -14,6 +24,7 @@ Object.entries(SERVICES).forEach(([route, config]) => {
     router.use(`/${route}`, ...guards, createProxyMiddleware({
         target: config.target,
         changeOrigin: true,
+        agent: upstreamAgent,
         proxyTimeout: 5000, // give up after 5s instead of hanging forever
         timeout: 5000,
         pathRewrite: (path) => `/${route}${path}`,

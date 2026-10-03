@@ -1,5 +1,29 @@
 const { verifyAccessToken } = require("../utils/tokens");
 const { findUserById } = require("../services/userService");
+const redisClient = require("../config/redis");
+
+const USER_CACHE_TTL = 30; // seconds
+
+// Cache only the fields we need. Never put passwordHash in Redis.
+async function getUserCached(id) {
+    const key = `user:${id}`;
+    try {
+        const cached = await redisClient.get(key);
+        if (cached) return JSON.parse(cached);
+    } catch (err) {
+        // Redis trouble: fall through to the database
+    }
+
+    const user = await findUserById(id);
+    if (user) {
+        const slim = { id: user.id, email: user.email, role: user.role };
+        try {
+            await redisClient.set(key, JSON.stringify(slim), { EX: USER_CACHE_TTL });
+        } catch (err) { /* ignore, cache is best-effort */ }
+        return slim;
+    }
+    return user;
+}
 
 /**
  * Verifies the access token stored in the httpOnly `access_token` cookie.
@@ -20,7 +44,7 @@ async function authenticate(req, res, next) {
 
     try {
         const decoded = verifyAccessToken(token);
-        const user = await findUserById(decoded.id);
+        const user = await getUserCached(decoded.id);
 
         if (!user) {
             return res.status(401).json({

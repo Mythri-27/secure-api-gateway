@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const redisClient = require("../config/redis");
 
 const router = express.Router();
 
@@ -8,15 +9,10 @@ const csrfProtection = require("../middleware/csrf");
 const { authenticate, authorize } = require("../middleware/auth");
 const { registerSchema, loginSchema, roleUpdateSchema } = require("../validators/authValidators");
 const { setAuthCookies, clearAuthCookies } = require("../utils/cookies");
-const {
-    signAccessToken,
-    signRefreshToken,
-    verifyRefreshToken,
-    generateJti,
-    generateCsrfToken,
-} = require("../utils/tokens");
+const {signAccessToken,signRefreshToken,verifyRefreshToken,generateJti,generateCsrfToken,} = require("../utils/tokens");
 const refreshTokenStore = require("../utils/refreshTokenStore");
 const { createUser, findUserByEmail, findUserById, updateRole } = require("../services/userService");
+
 
 function publicProfile(user) {
     return { id: user.id, email: user.email, role: user.role };
@@ -68,7 +64,8 @@ router.patch(
             if (!updated) {
                 return res.status(404).json({ error: "User not found" });
             }
-
+            
+            await redisClient.del(`user:${req.params.id}`);
             res.json({ user: publicProfile(updated) });
         } catch (err) {
             next(err);

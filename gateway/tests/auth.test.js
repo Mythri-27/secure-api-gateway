@@ -1,5 +1,6 @@
 jest.mock("../src/services/userService");
-
+jest.mock("../src/config/redis");
+const redisClient = require("../src/config/redis");
 const jwt = require("jsonwebtoken");
 const { findUserById } = require("../src/services/userService");
 const { authenticate, authorize } = require("../src/middleware/auth");
@@ -17,6 +18,7 @@ function signToken(payload, opts = {}) {
 }
 
 describe("authenticate middleware", () => {
+  beforeEach(() => redisClient.__reset());
   test("returns 401 NO_TOKEN when there's no access_token cookie", async () => {
     const req = { cookies: {} };
     const res = mockRes();

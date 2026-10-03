@@ -4,8 +4,8 @@ import products from "../data/products.js";
 const router = Router();
 
 router.get("/", (req, res) => {
-    console.log(req.headers["x-user-id"]);
-    console.log(req.headers["x-user-role"]);
+    // console.log(req.headers["x-user-id"]);
+    // console.log(req.headers["x-user-role"]);
     res.json(products);
 });
 
