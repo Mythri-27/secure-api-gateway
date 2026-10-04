@@ -1,6 +1,6 @@
 const SERVICES = {
     products: {
-        target: "http://127.0.0.1:5002",
+        target: process.env.PRODUCT_SERVICE_URL || "http://127.0.0.1:5002",
         authRequired: true,
         roles: ["user", "admin"],
     },
